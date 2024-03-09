@@ -1,0 +1,161 @@
+<?php
+
+include('security.php');
+
+include('includes/header.php'); 
+include('includes/navbar.php');  
+?>
+<div class="modal fade" id="deptmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Department</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="code.php" method="POST" enctype="multipart/form-data">
+
+        <div class="modal-body">
+
+            <?php
+                $depart = " SELECT * FROM departmentcategory";
+                $dept_run = mysqli_query($connection, $depart);
+
+                if(mysqli_num_rows($dept_run) > 0)
+                {
+                    ?>
+                    <div class="form-group">
+                        <label>Department List Cat </label>
+                        <select name="dept_cate_id" id="" class="form-control" required>
+                            <option value="">Choose your department Category</option>
+                                <?php
+                                foreach($dept_run as $row)
+                                {
+                                ?>
+                                <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+                                <?php
+                                }
+                                ?>
+                        </select>
+                    </div>
+                    <?php
+                }
+                else
+                {
+                    echo "No data Available";
+                }
+            ?>
+
+            <div class="form-group">
+                <label>Department List Name </label>
+                <input type="text" name="name" class="form-control" placeholder="Enter name" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" name="description" class="form-control" placeholder="Enter Description" required>
+            </div>
+            <div class="form-group">
+                <label>Section</label>
+                <input type="text" name="section"  class="form-control" placeholder="Enter Section" required>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" name="dept_list_btn" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"> Academics-Departments Lists
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#deptmodal">
+                Add
+            </button>
+        </h6>
+    </div>
+  <div class="card-body">
+
+
+
+       <div class="table-responsive">
+
+       <?php 
+        $connection = mysqli_connect("localhost", "root", "", "blogphp");
+        $query = "SELECT * FROM dept_categ_list";
+        $query_run = mysqli_query($connection, $query);
+
+       ?>
+
+        <table class="table table-bordered text-center" id="datatable"  width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Dept cat id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Section</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>           
+              <?php 
+                if(mysqli_num_rows($query_run) > 0)
+                {
+                  while($row = mysqli_fetch_assoc($query_run))
+                  {
+                    $dpt_cate_id = $row['dept_cate_id'];
+                    $dpt_cate = "SELECT * FROM departmentcategory WHERE id='$dpt_cate_id'";
+                    $dpt_cate_run = mysqli_query($connection, $dpt_cate)
+                    ?>
+                  <tr>
+                      <td><?php echo $row['id']; ?></td>
+                      <td>
+                        <?php foreach($dpt_cate_run as $dpt_row){echo $dpt_row['name'];} ?>
+                      </td>
+                      <td><?php echo $row['name']; ?></td>
+                      <td><?php echo $row['description']; ?></td>
+                      <td><?php echo $row['section']; ?></td>
+                      <td>
+                        <form action="department_list_edit.php" method="post">
+                          <input type="hidden" name="edit_dept_list_id" value="<?php echo $row['id']; ?>">
+                          <button type="submit" name="edit_dept_list_btn" class="btn btn-success"> EDIT</button>
+                        </form>
+                      </td>
+                      <td>
+                        <form action="code.php" method="post">
+                          <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
+                          <button type="submit" name="delete_dept_list_btn" class="btn btn-danger"> DELETE</button>
+                        </form>
+                      </td>
+                  </tr>
+                <?php
+                  }
+                }
+               else{
+                    echo "No Record found";
+                } 
+                ?>
+            </tbody>
+        </table>
+       </div> 
+    </div>
+  </div>
+
+<!---<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addadminprofile">
+       Add Admin Profile 
+</button>
+
+<?php 
+
+include('includes/scripts.php');
+include('includes/footer.php'); 
+?>
